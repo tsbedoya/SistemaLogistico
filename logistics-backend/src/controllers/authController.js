@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { Usuario } = require('../models');
+const Usuario = require('../models/Usuario');
 
 // POST /api/auth/registro
 async function registro(req, res, next) {
@@ -10,7 +10,6 @@ async function registro(req, res, next) {
       return res.status(400).json({ ok: false, message: 'nombre, email y password son requeridos' });
     }
 
-    // El hook beforeCreate del modelo hashea la contraseña automáticamente
     const usuario = await Usuario.create({
       nombre,
       email,

@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
-const { sequelize } = require('./models');
+const { sequelize } = require('./config/asosiations');
 const routes = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
 
