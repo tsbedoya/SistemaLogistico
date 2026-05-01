@@ -48,6 +48,17 @@ objController.consultarPorCiudad = (req, res) => {
         .catch((error) => { res.json({ success: false, data: error }) })
 }
 
+objController.actualizar = (req, res) => {
+    const { nombre, direccion, ciudad, pais } = req.body
+
+    modelo.update(
+        { nombre, direccion, ciudad, pais },
+        { where: { id: req.params.id } }
+    )
+    .then((result) => { res.json({ success: true, data: result }) })
+    .catch((error) => { res.json({ success: false, data: error }) })
+}
+
 objController.eliminar = (req, res) => {
     modelo.destroy({
         where: { id: req.params.id }

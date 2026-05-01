@@ -26,9 +26,8 @@ const Usuario = sequelize.define('Usuario', {
   rol: {
     type: DataTypes.STRING(20),
     allowNull: false,
-    defaultValue: 'OPERADOR',
-    validate: { isIn: [['ADMIN', 'OPERADOR']] },
-  },
+    defaultValue: 'OPERADOR'
+   },
 }, {
   tableName: 'usuarios',
   hooks: {

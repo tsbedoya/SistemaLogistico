@@ -50,6 +50,17 @@ objController.consultarPorDocumento = (req, res) => {
     }).catch((error) => { res.json({ success: false, data: error }) })
 }
 
+objController.actualizar = (req, res) => {
+    const { nombre, email, telefono, documento } = req.body
+
+    modelo.update(
+        { nombre, email, telefono, documento },
+        { where: { id: req.params.id } }
+    )
+    .then((result) => { res.json({ success: true, data: result }) })
+    .catch((error) => { res.json({ success: false, data: error }) })
+}
+
 objController.eliminar = (req, res) => {
     modelo.destroy({
         where: { id: req.params.id }

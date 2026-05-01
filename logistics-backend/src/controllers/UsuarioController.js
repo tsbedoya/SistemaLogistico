@@ -50,6 +50,17 @@ objController.consultarPorRol = (req, res) => {
         .catch((error) => { res.json({ success: false, data: error }) })
 }
 
+objController.actualizar = (req, res) => {
+    const { nombre, email, rol } = req.body
+
+    modelo.update(
+        { nombre, email, rol },
+        { where: { id: req.params.id } }
+    )
+    .then((result) => { res.json({ success: true, data: result }) })
+    .catch((error) => { res.json({ success: false, data: error }) })
+}
+
 objController.eliminar = (req, res) => {
     modelo.destroy({
         where: { id: req.params.id }

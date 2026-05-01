@@ -47,6 +47,17 @@ objController.consultarPorTipo = (req, res) => {
         .catch((error) => { res.json({ success: false, data: error }) })
 }
 
+objController.actualizar = (req, res) => {
+    const { nombre, descripcion, tipo } = req.body
+
+    modelo.update(
+        { nombre, descripcion, tipo },
+        { where: { id: req.params.id } }
+    )
+    .then((result) => { res.json({ success: true, data: result }) })
+    .catch((error) => { res.json({ success: false, data: error }) })
+}
+
 objController.eliminar = (req, res) => {
     modelo.destroy({
         where: { id: req.params.id }
