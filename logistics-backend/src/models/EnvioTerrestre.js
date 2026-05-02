@@ -1,9 +1,14 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const crypto = require('crypto');
 
 // Descuento del 5% si la cantidad supera 10 unidades (regla de negocio #2)
 const DESCUENTO_TERRESTRE = 0.05;
 const LIMITE_DESCUENTO = 10;
+
+const generateNumericId = () => {
+  return Date.now().toString() + Math.floor(Math.random() * 1000000).toString();
+};
 
 const EnvioTerrestre = sequelize.define('EnvioTerrestre', {
   id: {
@@ -26,6 +31,11 @@ const EnvioTerrestre = sequelize.define('EnvioTerrestre', {
     allowNull: false,
     references: { model: 'bodegas', key: 'id' },
   },
+  vehiculo_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: { model: 'vehiculos', key: 'id' },
+  },
   cantidad_producto: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -46,28 +56,13 @@ const EnvioTerrestre = sequelize.define('EnvioTerrestre', {
     allowNull: false,
   },
   // Formato: AAA123 — validado con regex en el middleware de validación
-  placa_vehiculo: {
-    type: DataTypes.STRING(6),
-    allowNull: false,
-    validate: {
-      is: {
-        args: /^[A-Z]{3}[0-9]{3}$/,
-        msg: 'La placa debe tener el formato AAA123 (3 letras y 3 números)',
-      },
-    },
-  },
+  
   // 10 caracteres alfanuméricos, único globalmente
   numero_guia: {
-    type: DataTypes.STRING(10),
-    allowNull: false,
-    unique: { msg: 'El número de guía ya existe' },
-    validate: {
-      is: {
-        args: /^[A-Z0-9]{10}$/,
-        msg: 'El número de guía debe tener 10 caracteres alfanuméricos en mayúscula',
-      },
+      type: DataTypes.STRING(10),
+      unique: true,
+      defaultValue: () => crypto.randomBytes(5).toString('hex').toUpperCase(),
     },
-  },
   fecha_registro: {
     type: DataTypes.DATEONLY,
     allowNull: false,
@@ -87,9 +82,7 @@ const EnvioTerrestre = sequelize.define('EnvioTerrestre', {
 }, {
   tableName: 'envios_terrestres',
   hooks: {
-    // Calcula precio_final automáticamente antes de guardar
-    beforeCreate: calcularPrecioFinal,
-    beforeUpdate: calcularPrecioFinal,
+    beforeValidate: calcularPrecioFinal,
   },
 });
 

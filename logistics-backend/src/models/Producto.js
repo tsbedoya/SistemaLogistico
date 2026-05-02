@@ -18,6 +18,7 @@ const Producto = sequelize.define('Producto', {
   tipo: {
     type: DataTypes.STRING(50),
     allowNull: false,
+    unique: true
   },
 }, {
   tableName: 'productos',

@@ -1,126 +1,137 @@
-const objController = {}
-const modelo = require('../models/EnvioTerrestre');
-const modeloCliente = require('../models/Cliente');
-const modeloProducto = require('../models/Producto');
-const modeloBodega = require('../models/Bodega');
+const objController = {};
+const modelo = require("../models/EnvioTerrestre");
+const modeloCliente = require("../models/Cliente");
+const modeloProducto = require("../models/Producto");
+const modeloBodega = require("../models/Bodega");
+const modeloVehiculo = require("../models/Vehiculos");
 
-objController.CrearActualizar = (req, res) => {
-    const {
-        cliente_id,
-        producto_id,
-        bodega_id,
-        cantidad_producto,
-        precio_base,
-        placa_vehiculo,
-        numero_guia,
-        fecha_registro,
-        fecha_entrega,
-    } = req.body
+const includes = [
+  { model: modeloCliente, as: "cliente" },
+  { model: modeloProducto, as: "producto" },
+  { model: modeloBodega, as: "bodega" },
+  { model: modeloVehiculo, as: "vehiculo" },
+];
 
-    modelo.findOne({
-        where: { numero_guia }
-    }).then((obj) => {
-        if (obj) {
-            obj.update({
-                cliente_id,
-                producto_id,
-                bodega_id,
-                cantidad_producto,
-                precio_base,
-                placa_vehiculo,
-                numero_guia,
-                fecha_registro,
-                fecha_entrega,
-            }).then((result) => { res.json({ success: true, data: result }) })
-                .catch((error) => { res.json({ success: false, data: error }) })
-        } else {
-            modelo.create({
-                cliente_id,
-                producto_id,
-                bodega_id,
-                cantidad_producto,
-                precio_base,
-                placa_vehiculo,
-                numero_guia,
-                fecha_registro,
-                fecha_entrega,
-            }).then((result) => { res.json({ success: true, data: result }) })
-                .catch((error) => { res.json({ success: false, data: error }) })
-        }
-    }).catch((error) => {
-        res.json({ success: false, data: error })
+objController.CrearActualizar = (req, res, next) => {
+  const {
+    cliente_id,
+    producto_id,
+    bodega_id,
+    vehiculo_id,
+    cantidad_producto,
+    precio_base,
+    fecha_registro,
+    fecha_entrega,
+  } = req.body;
+
+  modelo
+    .create({
+      cliente_id,
+      producto_id,
+      bodega_id,
+      vehiculo_id,
+      cantidad_producto,
+      precio_base,
+      fecha_registro,
+      fecha_entrega,
+      precio_final: cantidad_producto > 10
+      ? precio_base * 0.95
+      : precio_base
+
     })
-}
+    .then((result) => {
+      res.json({ success: true, data: result });
+    })
+    .catch(next);
+};
 
-objController.consultar = (req, res) => {
-    modelo.findAll({
-        include: [
-            { model: modeloCliente,  as: 'cliente'  },
-            { model: modeloProducto, as: 'producto' },
-            { model: modeloBodega,   as: 'bodega'   },
-        ]
-    }).then((result) => { res.json({ success: true, data: result }) })
-        .catch((error) => { res.json({ success: false, data: error }) })
-}
+objController.consultar = (req, res, next) => {
+  modelo
+    .findAll({ include: includes })
+    .then((result) => {
+      res.json({ success: true, data: result });
+    })
+    .catch(next);
+};
 
-objController.consultarPorId = (req, res) => {
-    modelo.findByPk(req.params.id, {
-        include: [
-            { model: modeloCliente,  as: 'cliente'  },
-            { model: modeloProducto, as: 'producto' },
-            { model: modeloBodega,   as: 'bodega'   },
-        ]
-    }).then((result) => {
-        if (!result) return res.json({ success: false, data: 'Envío terrestre no encontrado' })
-        res.json({ success: true, data: result })
-    }).catch((error) => { res.json({ success: false, data: error }) })
-}
+objController.consultarPorId = (req, res, next) => {
+  modelo
+    .findByPk(req.params.id, { include: includes })
+    .then((result) => {
+      if (!result)
+        return res.json({
+          success: false,
+          data: "Envío terrestre no encontrado",
+        });
+      res.json({ success: true, data: result });
+    })
+    .catch(next);
+};
 
-objController.consultarPorCliente = (req, res) => {
-    modelo.findAll({
-        where: { cliente_id: req.params.id },
-        include: [
-            { model: modeloCliente,  as: 'cliente'  },
-            { model: modeloProducto, as: 'producto' },
-            { model: modeloBodega,   as: 'bodega'   },
-        ]
-    }).then((result) => { res.json({ success: true, data: result }) })
-        .catch((error) => { res.json({ success: false, data: error }) })
-}
+objController.consultarPorCliente = (req, res, next) => {
+  modelo
+    .findAll({ where: { cliente_id: req.params.id }, include: includes })
+    .then((result) => {
+      res.json({ success: true, data: result });
+    })
+    .catch(next);
+};
 
-objController.consultarPorBodega = (req, res) => {
-    modelo.findAll({
-        where: { bodega_id: req.params.id },
-        include: [
-            { model: modeloCliente,  as: 'cliente'  },
-            { model: modeloProducto, as: 'producto' },
-            { model: modeloBodega,   as: 'bodega'   },
-        ]
-    }).then((result) => { res.json({ success: true, data: result }) })
-        .catch((error) => { res.json({ success: false, data: error }) })
-}
+objController.consultarPorBodega = (req, res, next) => {
+  modelo
+    .findAll({ where: { bodega_id: req.params.id }, include: includes })
+    .then((result) => {
+      res.json({ success: true, data: result });
+    })
+    .catch(next);
+};
 
-objController.actualizar = (req, res) => {
-    const {
-        cliente_id, producto_id, bodega_id,
-        cantidad_producto, precio_base,
-        placa_vehiculo, numero_guia,
-        fecha_registro, fecha_entrega,
-    } = req.body
+objController.actualizar = async (req, res, next) => {
+  const {
+    cliente_id,
+    producto_id,
+    bodega_id,
+    vehiculo_id,
+    cantidad_producto,
+    precio_base,
+    fecha_registro,
+    fecha_entrega,
+  } = req.body;
 
-    modelo.update(
-        { cliente_id, producto_id, bodega_id, cantidad_producto, precio_base, placa_vehiculo, numero_guia, fecha_registro, fecha_entrega },
-        { where: { id: req.params.id } }
-    )
-    .then((result) => { res.json({ success: true, data: result }) })
-    .catch((error) => { res.json({ success: false, data: error }) })
-}
+  try {
+    const instance = await modelo.findByPk(req.params.id);
+    if (!instance)
+      return res
+        .status(404)
+        .json({ ok: false, message: "Envío terrestre no encontrado" });
+    const precio_final = Number(cantidad_producto) > 10
+      ? Number(precio_base) * 0.95
+      : Number(precio_base);
+    instance.set({
+      cliente_id,
+      producto_id,
+      bodega_id,
+      vehiculo_id,
+      cantidad_producto,
+      precio_base,
+      precio_final,
+      fecha_registro,
+      fecha_entrega,
+    });
+    const result = await instance.save();
+    res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+};
 
-objController.eliminar = (req, res) => {
-    modelo.destroy({
-        where: { id: req.params.id }
-    }).then((result) => { res.json({ success: true, data: result }) })
-        .catch((error) => { res.json({ success: false, data: error }) })
-}
+objController.eliminar = (req, res, next) => {
+  modelo
+    .destroy({ where: { id: req.params.id } })
+    .then((result) => {
+      res.json({ success: true, data: result });
+    })
+    .catch(next);
+};
 
-module.exports = objController
+module.exports = objController;

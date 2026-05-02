@@ -1,7 +1,6 @@
 const { ValidationError, UniqueConstraintError, ForeignKeyConstraintError } = require('sequelize');
 
 // Manejador centralizado de errores — Bonus #6
-// Express lo reconoce como error handler por tener 4 parámetros (err, req, res, next)
 function errorHandler(err, req, res, next) {
   console.error(`[ERROR] ${req.method} ${req.path}:`, err.message);
 

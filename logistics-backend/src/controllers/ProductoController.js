@@ -1,7 +1,7 @@
 const objController = {}
 const modelo = require('../models/Producto');
 
-objController.CrearActualizar = (req, res) => {
+objController.CrearActualizar = (req, res, next) => {
     const {
         nombre,
         descripcion,
@@ -14,55 +14,53 @@ objController.CrearActualizar = (req, res) => {
         if (obj) {
             obj.update({ nombre, descripcion, tipo })
                 .then((result) => { res.json({ success: true, data: result }) })
-                .catch((error) => { res.json({ success: false, data: error }) })
+                .catch(next)
         } else {
             modelo.create({ nombre, descripcion, tipo })
                 .then((result) => { res.json({ success: true, data: result }) })
-                .catch((error) => { res.json({ success: false, data: error }) })
+                .catch(next)
         }
-    }).catch((error) => {
-        res.json({ success: false, data: error })
-    })
+    }).catch(next)
 }
 
-objController.consultar = (req, res) => {
+objController.consultar = (req, res, next) => {
     modelo.findAll()
         .then((result) => { res.json({ success: true, data: result }) })
-        .catch((error) => { res.json({ success: false, data: error }) })
+        .catch(next)
 }
 
-objController.consultarPorId = (req, res) => {
+objController.consultarPorId = (req, res, next) => {
     modelo.findByPk(req.params.id)
         .then((result) => {
             if (!result) return res.json({ success: false, data: 'Producto no encontrado' })
             res.json({ success: true, data: result })
         })
-        .catch((error) => { res.json({ success: false, data: error }) })
+        .catch(next)
 }
 
-objController.consultarPorTipo = (req, res) => {
+objController.consultarPorTipo = (req, res, next) => {
     modelo.findAll({
         where: { tipo: req.params.tipo }
     }).then((result) => { res.json({ success: true, data: result }) })
-        .catch((error) => { res.json({ success: false, data: error }) })
+        .catch(next)
 }
 
-objController.actualizar = (req, res) => {
+objController.actualizar = (req, res, next) => {
     const { nombre, descripcion, tipo } = req.body
 
     modelo.update(
         { nombre, descripcion, tipo },
-        { where: { id: req.params.id } }
+        { where: { id: req.params.id }, validate: true }
     )
     .then((result) => { res.json({ success: true, data: result }) })
-    .catch((error) => { res.json({ success: false, data: error }) })
+    .catch(next)
 }
 
-objController.eliminar = (req, res) => {
+objController.eliminar = (req, res, next) => {
     modelo.destroy({
         where: { id: req.params.id }
     }).then((result) => { res.json({ success: true, data: result }) })
-        .catch((error) => { res.json({ success: false, data: error }) })
+        .catch(next)
 }
 
 module.exports = objController

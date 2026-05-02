@@ -1,9 +1,11 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const crypto = require('crypto');
 
 // Descuento del 3% si la cantidad supera 10 unidades (regla de negocio #3)
 const DESCUENTO_MARITIMO = 0.03;
 const LIMITE_DESCUENTO = 10;
+
 
 const EnvioMaritimo = sequelize.define('EnvioMaritimo', {
   id: {
@@ -44,27 +46,15 @@ const EnvioMaritimo = sequelize.define('EnvioMaritimo', {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
   },
-  // Formato: AAA1234A — validado con regex
-  numero_flota: {
-    type: DataTypes.STRING(8),
+  flota_id: {
+    type: DataTypes.INTEGER,
     allowNull: false,
-    validate: {
-      is: {
-        args: /^[A-Z]{3}[0-9]{4}[A-Z]$/,
-        msg: 'El número de flota debe tener el formato AAA1234A',
-      },
-    },
+    references: { model: 'flotas', key: 'id' },
   },
   numero_guia: {
     type: DataTypes.STRING(10),
-    allowNull: false,
-    unique: { msg: 'El número de guía ya existe' },
-    validate: {
-      is: {
-        args: /^[A-Z0-9]{10}$/,
-        msg: 'El número de guía debe tener 10 caracteres alfanuméricos en mayúscula',
-      },
-    },
+    unique: true,
+    defaultValue: () => crypto.randomBytes(5).toString('hex').toUpperCase(),
   },
   fecha_registro: {
     type: DataTypes.DATEONLY,
@@ -84,18 +74,6 @@ const EnvioMaritimo = sequelize.define('EnvioMaritimo', {
   },
 }, {
   tableName: 'envios_maritimos',
-  hooks: {
-    beforeCreate: calcularPrecioFinal,
-    beforeUpdate: calcularPrecioFinal,
-  },
 });
-
-function calcularPrecioFinal(envio) {
-  const cantidad = envio.cantidad_producto;
-  const precioBase = parseFloat(envio.precio_base);
-  envio.precio_final = cantidad > LIMITE_DESCUENTO
-    ? precioBase * (1 - DESCUENTO_MARITIMO)
-    : precioBase;
-}
 
 module.exports = EnvioMaritimo;
