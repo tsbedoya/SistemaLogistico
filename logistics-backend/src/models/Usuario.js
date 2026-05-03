@@ -30,6 +30,7 @@ const Usuario = sequelize.define('Usuario', {
    },
 }, {
   tableName: 'usuarios',
+  timestamps: false,
   hooks: {
     // Hashea la contraseña antes de guardar
     beforeCreate: async (usuario) => {

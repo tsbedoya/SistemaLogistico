@@ -26,6 +26,7 @@ const Puerto = sequelize.define('Puerto', {
   },
 }, {
   tableName: 'puertos',
+  timestamps: false,
 });
 
 module.exports = Puerto;
