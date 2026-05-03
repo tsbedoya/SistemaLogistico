@@ -8,7 +8,7 @@ export default defineConfig({
     // Proxy para evitar CORS en desarrollo — redirige /api al backend
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'https://sistemalogistico.onrender.com',
         changeOrigin: true,
       },
     },
