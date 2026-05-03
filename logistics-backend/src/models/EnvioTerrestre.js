@@ -81,6 +81,7 @@ const EnvioTerrestre = sequelize.define('EnvioTerrestre', {
   },
 }, {
   tableName: 'envios_terrestres',
+  timestamps: false,
   hooks: {
     beforeValidate: calcularPrecioFinal,
   },

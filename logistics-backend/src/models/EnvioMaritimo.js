@@ -74,6 +74,7 @@ const EnvioMaritimo = sequelize.define('EnvioMaritimo', {
   },
 }, {
   tableName: 'envios_maritimos',
+  timestamps: false,
 });
 
 module.exports = EnvioMaritimo;

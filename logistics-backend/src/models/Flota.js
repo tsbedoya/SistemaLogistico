@@ -29,6 +29,7 @@ const Flota = sequelize.define('Flota', {
   },
 }, {
   tableName: 'flotas',
+  timestamps: false,
 });
 
 module.exports = Flota;

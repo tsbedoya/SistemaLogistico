@@ -25,6 +25,7 @@ const Bodega = sequelize.define('Bodega', {
   },
 }, {
   tableName: 'bodegas',
+  timestamps: false,
 });
 
 module.exports = Bodega;
