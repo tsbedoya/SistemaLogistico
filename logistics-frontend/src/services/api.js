@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: 'https://sistemalogistico.onrender.com/api',
 });
 
 // Interceptor: agrega el Bearer token en cada request automáticamente
