@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-// Todas las peticiones van a /api (el proxy de Vite las redirige al backend)
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
 });
 
 // Interceptor: agrega el Bearer token en cada request automáticamente
